@@ -17,7 +17,7 @@ ADD server.py .
 
 # Define model used
 ARG MODEL_NAME
-ENV MODEL_NAME=andite/anything-v4.0
+ENV MODEL_NAME=sebastian-hofstaetter/distilbert-dot-tas_b-b256-msmarco
 
 # Add your model weight files 
 ADD download.py .
