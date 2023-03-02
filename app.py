@@ -1,7 +1,4 @@
 import os
-import torch
-import base64
-from io import BytesIO
 from transformers import AutoTokenizer, AutoModel
 
 
@@ -9,7 +6,7 @@ from transformers import AutoTokenizer, AutoModel
 # Load your model to GPU as a global variable here using the variable name "model"
 def init():
     global tokenizer, bert_model
-    
+
     MODEL_NAME = os.getenv("MODEL_NAME")
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     bert_model = AutoModel.from_pretrained(MODEL_NAME).to("cuda")
@@ -17,7 +14,7 @@ def init():
 
 # Inference is ran for every server call
 # Reference your preloaded global model variable here.
-def inference(model_inputs:dict) -> dict:
+def inference(model_inputs: dict) -> dict:
     """DistilBERT TAS-B is used for encoding passages into latent embeddings
     at inference time.
 
@@ -31,11 +28,11 @@ def inference(model_inputs:dict) -> dict:
 
     # Parse out your arguments
     passage = model_inputs.get('passage', None)
-    if passage == None:
+    if not passage:
         return {'message': "No passage provided"}
-    
+
     # Run the model
-    passage_tokenized = tokenizer(passage)
+    passage_tokenized = tokenizer(passage, return_tensors="pt").to("cuda")
     embeddings = bert_model(**passage_tokenized)[0][:,0,:].squeeze(0)
 
     # Return the results as a dictionary
